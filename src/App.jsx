@@ -1,5 +1,5 @@
 import React from 'react'
-import { BrowserRouter as Router, Routes, Route, useParams } from 'react-router-dom'
+import { Routes, Route, useMatch } from 'react-router-dom'
 import { useApi } from './useApi'
 import LoadingSpinner from './LoadingSpinner'
 import ErrorMessage from './ErrorMessage'
@@ -14,12 +14,8 @@ const mapResults = ({ results }) =>
   }))
 
 const App = () => {
-  const { name } = useParams()
-  const {
-    data: pokemonList,
-    error,
-    isLoading,
-  } = useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
+  const match = useMatch('/pokemon/:name')
+  const { data: pokemonList, error, isLoading } = useApi('https://pokeapi.co/api/v2/pokemon/?limit=50', mapResults)
 
   if (isLoading) {
     return <LoadingSpinner />
@@ -31,28 +27,22 @@ const App = () => {
   let next = null
   let previous = null
 
-  if (name) {
-    const pokemonId = pokemonList.find(({ name: pokemonName }) => pokemonName === name)?.id
-    previous = pokemonList.find(({ id }) => id === pokemonId - 1) || null
-    next = pokemonList.find(({ id }) => id === pokemonId + 1) || null
+  if (match && match.params && Array.isArray(pokemonList)) {
+    const currentPokemon = pokemonList.find(({ name }) => name === match.params.name)
+    if (currentPokemon) {
+      const pokemonId = currentPokemon.id
+      previous = pokemonList.find(({ id }) => id === pokemonId - 1) || null
+      next = pokemonList.find(({ id }) => id === pokemonId + 1) || null
+    }
   }
 
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<PokemonList pokemonList={pokemonList} />} />
-        <Route
-          path="/pokemon/:name"
-          element={
-            <PokemonPage
-              pokemonList={pokemonList}
-              previous={previous}
-              next={next}
-            />
-          }
-        />
-      </Routes>
-    </Router>
+    <Routes>
+      <Route exact path="/" element={<PokemonList pokemonList={pokemonList} />} />
+      <Route exact path="/pokemon/:name" element={
+        <PokemonPage pokemonList={pokemonList} previous={previous} next={next} />
+      } />
+    </Routes>
   )
 }
 
