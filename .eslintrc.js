@@ -3,6 +3,7 @@ module.exports = {
     browser: true,
     es2021: true,
     node: true,
+    jest: true,
   },
   extends: ['eslint:recommended', 'plugin:react/recommended'],
   parserOptions: {
@@ -24,10 +25,5 @@ module.exports = {
     'arrow-spacing': ['error', { before: true, after: true }],
     'no-console': 'error',
     'react/prop-types': 0,
-  },
-  {
-    "env": {
-      "jest": true // This enables Jest global variables
-    }
   },
 }
