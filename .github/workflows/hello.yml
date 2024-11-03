@@ -1,0 +1,16 @@
+name: Hello World Workflow
+
+on: [push]
+
+jobs:
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output Hello World
+        run: echo "Hello World!"
+
+      - name: Print Current Date
+        run: date
+
+      - name: List Directory Contents
+        run: ls -l
